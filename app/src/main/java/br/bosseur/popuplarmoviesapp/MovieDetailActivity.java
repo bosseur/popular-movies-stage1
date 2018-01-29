@@ -39,7 +39,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Movie selectedMovie = intent.getParcelableExtra(MOVIE_TAG);
         if (selectedMovie != null) {
             titleTextView.setText(selectedMovie.getTitle());
-            String urlImage = NetworkUtils.buildImagweUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
+            String urlImage = NetworkUtils.buildImageUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
             Picasso.with(this).load(urlImage).into(posterImageView);
 
             synopsisTextView.setText(selectedMovie.getOverview());

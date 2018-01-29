@@ -58,7 +58,7 @@ public final class NetworkUtils {
      * @param imageWidth size of the image to be shown
      * @return The URL used to retrieve the image.
      */
-    public static URL buildImagweUrl(String image, String imageWidth) {
+    public static URL buildImageUrl(String image, String imageWidth) {
         Uri builtUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
                 .appendPath(imageWidth)
                 .appendPath(image.trim())

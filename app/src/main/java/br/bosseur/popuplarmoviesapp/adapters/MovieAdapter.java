@@ -66,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Movie selectedMovie = mMovieData.get(position);
         Context context = holder.itemView.getContext();
         // TODO change the way to get the width of the image
-        String urlImage = NetworkUtils.buildImagweUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
+        String urlImage = NetworkUtils.buildImageUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
         Log.d(TAG, selectedMovie.toString());
         Picasso.with(context).load(urlImage).into(holder.mMoviePosterImageView);
     }
