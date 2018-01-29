@@ -1,4 +1,8 @@
 # popular-movies-stage1
 Project for android nano degree
 
-In strings.xml in the api_key entrance inform your api key to use the application.
+Create gradle.properties file in your $USER/.gradle folder, if it not exists
+in this file put the following entry:
+
+
+###### MyTheMovieDBApiToken="<YOUR API KEY>"
