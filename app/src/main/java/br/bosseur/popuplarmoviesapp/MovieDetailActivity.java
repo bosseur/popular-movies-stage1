@@ -20,6 +20,7 @@ import static br.bosseur.popuplarmoviesapp.MoviesActivity.MOVIE_TAG;
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
+    private ImageView backdropImage;
     private ImageView posterImageView;
     private TextView synopsisTextView;
     private TextView ratingTextView;
@@ -33,10 +34,12 @@ public class MovieDetailActivity extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
 
+        backdropImage = (ImageView) findViewById(R.id.backdrop_image_view);
         posterImageView = (ImageView) findViewById(R.id.iv_movie_poster);
         synopsisTextView = (TextView) findViewById(R.id.tv_movie_plot);
         ratingTextView = (TextView) findViewById(R.id.tv_movie_rating);
@@ -45,14 +48,25 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(MOVIE_TAG)) {
             Movie selectedMovie = intent.getParcelableExtra(MOVIE_TAG);
+            collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.background_light));
+            collapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.background_light));
             collapsingToolbar.setTitle(selectedMovie.getTitle());
 
             String urlImage = NetworkUtils.buildImageUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
             Picasso.with(this).load(urlImage).into(posterImageView);
 
+            urlImage = NetworkUtils.buildImageUrl(selectedMovie.getBackdropPath().substring(1), "w185").toString();
+            Picasso.with(this).load(urlImage).into(backdropImage);
+
             synopsisTextView.setText(selectedMovie.getOverview());
             ratingTextView.setText(getString(R.string.movie_rating, selectedMovie.getVoteAverage()));
             releaseDateTextView.setText(getString(R.string.release_date, selectedMovie.getReleaseDate()));
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

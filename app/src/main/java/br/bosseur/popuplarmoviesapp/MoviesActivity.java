@@ -15,13 +15,21 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+
 import java.util.Collections;
 import java.util.List;
 
 import br.bosseur.popuplarmoviesapp.adapters.MovieAdapter;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.tasks.AsyncTaskListener;
-import br.bosseur.popuplarmoviesapp.tasks.MovieListTask;
+import br.bosseur.popuplarmoviesapp.utilities.MovieListUtil;
+import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 /**
  * The main activity of the app. On opening will show a list of movies on the screen.
@@ -72,7 +80,33 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
     }
 
     private void queryMovies() {
-        new MovieListTask(this, this).execute(sortOrder);
+        String url = NetworkUtils.buildMovieUrl(sortOrder).toString();
+        showMovieLoading();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            List<Movie> movieList = MovieListUtil.buildList(response);
+                            showMovieView();
+                            movieAdapter.setMovieData(movieList);
+                            movieAdapter.notifyDataSetChanged();
+
+                        } catch (JSONException e) {
+                            showError(e.getMessage());
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                showError(error.getMessage());
+            }
+        });
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+//        new MovieListTask(this, this).execute(sortOrder);
     }
 
     private void retrieveSortOrder(Bundle savedInstanceState) {
@@ -139,14 +173,21 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
         return super.onOptionsItemSelected(item);
     }
 
+    private void showMovieLoading() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        errorMessageTextView.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
 
     private void showMovieView() {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
         errorMessageTextView.setVisibility(View.INVISIBLE);
     }
 
     private void showError(String errorMessage) {
         errorMessageTextView.setText(errorMessage);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
         errorMessageTextView.setVisibility(View.VISIBLE);
     }
