@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import org.json.JSONException;
 
@@ -13,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 
 import br.bosseur.popuplarmoviesapp.R;
+import br.bosseur.popuplarmoviesapp.listeners.TaskListener;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.utilities.MovieListUtil;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
@@ -27,9 +27,9 @@ public class MovieListTask extends AsyncTask<String, Void, List<Movie>> {
 
     private String errorMessage;
     private Context context;
-    private AsyncTaskListener<List<Movie>> listener;
+    private TaskListener<List<Movie>> listener;
 
-    public MovieListTask(Context context, AsyncTaskListener<List<Movie>> listener) {
+    public MovieListTask(Context context, TaskListener<List<Movie>> listener) {
         this.context = context;
         this.listener = listener;
     }

@@ -16,26 +16,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONException;
 
 import java.util.Collections;
 import java.util.List;
 
 import br.bosseur.popuplarmoviesapp.adapters.MovieAdapter;
+import br.bosseur.popuplarmoviesapp.listeners.ErrorListener;
+import br.bosseur.popuplarmoviesapp.listeners.MovieResponseListener;
+import br.bosseur.popuplarmoviesapp.listeners.TaskListener;
 import br.bosseur.popuplarmoviesapp.model.Movie;
-import br.bosseur.popuplarmoviesapp.tasks.AsyncTaskListener;
-import br.bosseur.popuplarmoviesapp.utilities.MovieListUtil;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 /**
  * The main activity of the app. On opening will show a list of movies on the screen.
  */
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        AsyncTaskListener<List<Movie>> {
+        TaskListener<List<Movie>> {
 
     private static final String TAG = MoviesActivity.class.getSimpleName();
 
@@ -46,6 +43,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
     private ProgressBar mLoadingIndicator;
+    private MovieResponseListener responseListener;
+    private ErrorListener errorListener;
 
     private String sortOrder;
 
@@ -75,6 +74,9 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
 
         recyclerView.setAdapter(movieAdapter);
 
+        responseListener = new MovieResponseListener(this);
+        errorListener = new ErrorListener(this);
+
         queryMovies();
 
     }
@@ -83,30 +85,9 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
         String url = NetworkUtils.buildMovieUrl(sortOrder).toString();
         showMovieLoading();
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        try {
-                            List<Movie> movieList = MovieListUtil.buildList(response);
-                            showMovieView();
-                            movieAdapter.setMovieData(movieList);
-                            movieAdapter.notifyDataSetChanged();
-
-                        } catch (JSONException e) {
-                            showError(e.getMessage());
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                showError(error.getMessage());
-            }
-        });
+                responseListener, errorListener);
         AppController.getInstance().addToRequestQueue(stringRequest);
 
-//        new MovieListTask(this, this).execute(sortOrder);
     }
 
     private void retrieveSortOrder(Bundle savedInstanceState) {
