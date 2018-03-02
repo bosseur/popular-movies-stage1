@@ -22,8 +22,9 @@ import java.util.Collections;
 import java.util.List;
 
 import br.bosseur.popuplarmoviesapp.adapters.MovieAdapter;
+import br.bosseur.popuplarmoviesapp.listeners.AdapterOnClickHandler;
 import br.bosseur.popuplarmoviesapp.listeners.ErrorListener;
-import br.bosseur.popuplarmoviesapp.listeners.MovieResponseListener;
+import br.bosseur.popuplarmoviesapp.listeners.MovieApiResponseListener;
 import br.bosseur.popuplarmoviesapp.listeners.TaskListener;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
@@ -31,8 +32,8 @@ import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 /**
  * The main activity of the app. On opening will show a list of movies on the screen.
  */
-public class MoviesActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
-        TaskListener<List<Movie>> {
+public class MoviesActivity extends AppCompatActivity implements AdapterOnClickHandler<Movie>,
+        TaskListener {
 
     private static final String TAG = MoviesActivity.class.getSimpleName();
 
@@ -43,8 +44,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
     private ProgressBar mLoadingIndicator;
-    private MovieResponseListener responseListener;
-    private ErrorListener errorListener;
+    private MovieApiResponseListener<Movie> responseListener;
+    private ErrorListener<List<Movie>> errorListener;
 
     private String sortOrder;
 
@@ -74,8 +75,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
 
         recyclerView.setAdapter(movieAdapter);
 
-        responseListener = new MovieResponseListener(this);
-        errorListener = new ErrorListener(this);
+        responseListener = new MovieApiResponseListener<>(this, Movie.class);
+        errorListener = new ErrorListener<>(this);
 
         queryMovies();
 
@@ -149,7 +150,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
             default:
         }
 
-        movieAdapter.setMovieData(Collections.EMPTY_LIST);
+        movieAdapter.setMovieData(Collections.<Movie>emptyList());
         queryMovies();
         return super.onOptionsItemSelected(item);
     }
@@ -203,7 +204,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.Mo
     }
 
     @Override
-    public void onCompleteTask(List<Movie> movieList) {
+    public void onCompleteTask(List movieList, Class clazz) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
         showMovieView();

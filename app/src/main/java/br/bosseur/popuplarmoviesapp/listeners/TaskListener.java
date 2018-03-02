@@ -1,11 +1,14 @@
 package br.bosseur.popuplarmoviesapp.listeners;
 
+import java.util.List;
+
 /**
- * Interface for doing callbacks in stages calls
+ * Interface for doing callbacks in staged calls
  * on internet connection
  */
 
-public interface TaskListener<T> {
+public interface TaskListener {
+
     /**
      * Should be called when an internet call starts
      */
@@ -22,5 +25,5 @@ public interface TaskListener<T> {
      * passing the data that was received.
      * @param data The data that was returned by the call
      */
-    void onCompleteTask(T data);
+    void onCompleteTask(List<?> data, Class clazz);
 }

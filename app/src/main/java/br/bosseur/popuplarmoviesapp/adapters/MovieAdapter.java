@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import br.bosseur.popuplarmoviesapp.R;
+import br.bosseur.popuplarmoviesapp.listeners.AdapterOnClickHandler;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
@@ -26,24 +27,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private List<Movie> mMovieData;
 
-    private final MovieAdapterOnClickHandler mClickHandler;
+    private final AdapterOnClickHandler<Movie> mClickHandler;
 
-    public MovieAdapter(MovieAdapterOnClickHandler mClickHandler) {
+    public MovieAdapter(AdapterOnClickHandler<Movie> mClickHandler) {
         this.mClickHandler = mClickHandler;
     }
 
-    /**
-     * The interface that defines methods for handling clicks on @Movie onClick messages.
-     */
-    public interface MovieAdapterOnClickHandler {
-
-        /**
-         * Handles a simple click on a @Movie
-         *
-         * @param clickedMovie The movie that was clicked
-         */
-        void onClick(Movie clickedMovie);
-    }
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

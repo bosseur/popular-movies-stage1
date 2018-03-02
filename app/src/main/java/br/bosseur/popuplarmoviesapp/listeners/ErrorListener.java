@@ -11,11 +11,11 @@ import br.bosseur.popuplarmoviesapp.model.Movie;
  * Listener for handling errors;
  */
 
-public class ErrorListener implements Response.ErrorListener {
+public class ErrorListener<T> implements Response.ErrorListener {
 
-    private TaskListener<List<Movie>> listener;
+    private TaskListener listener;
 
-    public ErrorListener(TaskListener<List<Movie>> listener) {
+    public ErrorListener(TaskListener listener) {
         this.listener = listener;
     }
 

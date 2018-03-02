@@ -36,6 +36,8 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String MOVIE_API_BASE_URL = "http://api.themoviedb.org/3/movie";
+    private static final String MOVIE_TRAILER_PATH = "videos";
+    private static final String MOVIE_REVIEW_PATH = "reviews";
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
 
     /**
@@ -47,6 +49,39 @@ public final class NetworkUtils {
     public static URL buildMovieUrl(String sortPath) {
         Uri builtUri = Uri.parse(MOVIE_API_BASE_URL).buildUpon()
                 .appendPath(sortPath)
+                .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_TOKEN)
+                .build();
+        Log.d(TAG, builtUri.toString());
+        return buildUrl(builtUri);
+    }
+
+    /**
+     * Builds the URL used to retrieve the trailers of a specific movie.
+     *
+     * @param movieId The id of the movie to fetch trailer for.
+     * @return The URL to use to query the movie api.
+     */
+    public static URL buildTrailerUrl(String movieId) {
+        Uri builtUri = Uri.parse(MOVIE_API_BASE_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath(MOVIE_TRAILER_PATH)
+                .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_TOKEN)
+                .build();
+        Log.d(TAG, builtUri.toString());
+        return buildUrl(builtUri);
+    }
+
+
+    /**
+     * Builds the URL used to retrieve the trailers of a specific movie.
+     *
+     * @param movieId The id of the movie to fetch trailer for.
+     * @return The URL to use to query the movie api.
+     */
+    public static URL buildReviewUrl(String movieId) {
+        Uri builtUri = Uri.parse(MOVIE_API_BASE_URL).buildUpon()
+                .appendPath(movieId)
+                .appendPath(MOVIE_REVIEW_PATH)
                 .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_TOKEN)
                 .build();
         Log.d(TAG, builtUri.toString());

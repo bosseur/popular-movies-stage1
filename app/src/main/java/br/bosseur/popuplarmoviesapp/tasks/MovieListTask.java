@@ -14,7 +14,7 @@ import java.util.List;
 import br.bosseur.popuplarmoviesapp.R;
 import br.bosseur.popuplarmoviesapp.listeners.TaskListener;
 import br.bosseur.popuplarmoviesapp.model.Movie;
-import br.bosseur.popuplarmoviesapp.utilities.MovieListUtil;
+import br.bosseur.popuplarmoviesapp.utilities.MovieAppConverterUtil;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 /**
@@ -27,9 +27,9 @@ public class MovieListTask extends AsyncTask<String, Void, List<Movie>> {
 
     private String errorMessage;
     private Context context;
-    private TaskListener<List<Movie>> listener;
+    private TaskListener listener;
 
-    public MovieListTask(Context context, TaskListener<List<Movie>> listener) {
+    public MovieListTask(Context context, TaskListener listener) {
         this.context = context;
         this.listener = listener;
     }
@@ -62,7 +62,7 @@ public class MovieListTask extends AsyncTask<String, Void, List<Movie>> {
         URL urlMovieList = NetworkUtils.buildMovieUrl(urls[0]);
         try {
             String response = NetworkUtils.getResponseFromHttpUrl(urlMovieList);
-            return MovieListUtil.buildList(response);
+            return MovieAppConverterUtil.buildResultList(response, Movie.class);
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
             errorMessage = context.getString(R.string.standard_error_message, e.getMessage());
@@ -77,7 +77,7 @@ public class MovieListTask extends AsyncTask<String, Void, List<Movie>> {
     protected void onPostExecute(List<Movie> movieList) {
 
         if (movieList != null) {
-            listener.onCompleteTask(movieList);
+            listener.onCompleteTask(movieList, Movie.class);
         } else {
             listener.onError(errorMessage);
         }
