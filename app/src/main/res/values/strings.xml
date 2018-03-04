@@ -30,4 +30,5 @@
     <string name="pref_sort_order_default">top_rated</string>
     <string name="pref_sort_order_key">pref_sort_order</string>
     <string name="error_no_movie_found">No movie was found</string>
+    <string name="dummy_text">App title</string>
 </resources>

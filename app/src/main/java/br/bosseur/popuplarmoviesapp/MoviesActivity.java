@@ -82,7 +82,7 @@ public class MoviesActivity extends AppCompatActivity implements
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_progress_indicator);
         errorMessageTextView = (TextView) findViewById(R.id.tv_error_message);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_movie_list);
         recyclerView.setLayoutManager(layoutManager);

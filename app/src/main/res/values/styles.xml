@@ -16,6 +16,11 @@
         <item name="android:layout_height">?attr/actionBarSize</item>
     </style>
 
+    <style name="ToolbarStyleMain" parent="ToolbarStyle">
+        <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="android:background" >@color/colorPrimaryDark</item>
+    </style>
+
     <style name="ToolbarTheme" >
         <item name="colorControlNormal">@color/toolbar_color_control_normal</item>
     </style>
