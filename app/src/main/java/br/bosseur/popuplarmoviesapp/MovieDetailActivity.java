@@ -155,11 +155,10 @@ public class MovieDetailActivity extends AppCompatActivity implements
         if(cursor.getCount() > 0) {
             cursor.moveToFirst();
             Movie favoriteMovie = MovieAppConverterUtil.buildFromCursor(cursor);
-            cursor.close();
 
             return favoriteMovie;
         }
-
+        cursor.close();
         return null;
     }
 

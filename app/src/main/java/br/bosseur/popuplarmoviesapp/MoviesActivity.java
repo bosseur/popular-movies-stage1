@@ -128,6 +128,9 @@ public class MoviesActivity extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
+        currentSortOrder = preferences.getString(getString(R.string.pref_sort_order_key), getString(R.string.pref_sort_order_default));
+        Log.d(TAG, String.format("Sort order: %s", currentSortOrder));
+
         if (getString(R.string.popular_movie_url).equals(currentSortOrder)) {
             menu.findItem(R.id.popular).setChecked(true);
         } else if (getString(R.string.top_rated_movie_url).equals(currentSortOrder)
@@ -171,10 +174,10 @@ public class MoviesActivity extends AppCompatActivity implements
 
     private void queryMovies() {
         String preferenceOrderKey = getString(R.string.pref_sort_order_key);
-        String selectedOerder = preferences.getString(preferenceOrderKey, getString(R.string.pref_sort_order_default));
+        currentSortOrder = preferences.getString(preferenceOrderKey, getString(R.string.pref_sort_order_default));
         Bundle order = new Bundle();
 
-        order.putString(preferenceOrderKey, selectedOerder);
+        order.putString(preferenceOrderKey, currentSortOrder);
 
         android.support.v4.app.LoaderManager loaderManager  = getSupportLoaderManager();
         android.support.v4.content.Loader<Object> loader = loaderManager.getLoader(MOVIE_SEARCH_LOADER);
@@ -189,7 +192,7 @@ public class MoviesActivity extends AppCompatActivity implements
     private void updatePreference() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(getString(R.string.pref_sort_order_key), currentSortOrder);
-        editor.apply();
+        editor.commit();
     }
 
     private void showMovieLoading() {
@@ -252,7 +255,9 @@ public class MoviesActivity extends AppCompatActivity implements
                             null,
                             null);
 
-                    return MovieAppConverterUtil.buildListFromCursor(cursor);
+                    List<Movie> movies = MovieAppConverterUtil.buildListFromCursor(cursor);
+                    cursor.close();
+                    return movies;
 
                 }else {
                     URL urlMovieList = NetworkUtils.buildMovieUrl(order);
