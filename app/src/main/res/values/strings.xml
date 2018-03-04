@@ -11,4 +11,24 @@
     <string name="movie_rating">Rating: %f</string>
     <string name="release_date">Release date: %s</string>
     <string name="movie_image">Image from the selected movie</string>
+    <string name="movie_plot_example">This is a test movie plot example.</string>
+    <string name="movie_rating_example">10</string>
+    <string name="release_date_example">2016</string>
+    <string name="movie_duration_example">120 min</string>
+    <string name="top_trailer_label">Trailers:</string>
+    <string name="favorite">Favorite indicator</string>
+    <string name="backdrop_image_description">Backdrop image of the selected movie</string>
+    <string name="voting_label">%s/10</string>
+    <string name="top_review_label">Reviews:</string>
+    <string name="fake_review_author">Ernst Koetsier</string>
+    <string name="fake_review_content">Some arbitrary content</string>
+    <string name="author_label">Author:</string>
+    <string name="movie_favorite_added_alert">Movie added to favorites</string>
+    <string name="movie_favorite_removed_alert">Movie removed from favorites</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="pref_favorite_value">favorite</string>
+    <string name="pref_sort_order_default">top_rated</string>
+    <string name="pref_sort_order_key">pref_sort_order</string>
+    <string name="error_no_movie_found">No movie was found</string>
+    <string name="dummy_text">App title</string>
 </resources>

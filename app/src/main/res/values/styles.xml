@@ -8,4 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="layout_collapseMode">pin</item>
+        <item name="titleTextColor">@color/toolbar_title_color</item>
+        <item name="android:textColor">@color/toolbar_title_color</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+    </style>
+
+    <style name="ToolbarStyleMain" parent="ToolbarStyle">
+        <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="android:background" >@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ToolbarTheme" >
+        <item name="colorControlNormal">@color/toolbar_color_control_normal</item>
+    </style>
+
+
 </resources>

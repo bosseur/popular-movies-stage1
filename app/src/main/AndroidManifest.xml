@@ -26,6 +26,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MoviesActivity" />
         </activity>
+
+        <provider
+            android:authorities="br.bosseur.popuplarmoviesapp.movies"
+            android:name=".data.MovieProvider"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
