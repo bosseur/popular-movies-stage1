@@ -79,7 +79,7 @@ public class Movie implements Parcelable {
     private boolean video;
     private float voteAverage;
     private long voteCount;
-    private boolean isFavorite;
+    private boolean isFavorite = false;
 
 
     public boolean isFavorite() {

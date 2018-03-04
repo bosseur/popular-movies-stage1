@@ -1,5 +1,7 @@
 package br.bosseur.popuplarmoviesapp.utilities;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.google.gson.FieldNamingPolicy;
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.bosseur.popuplarmoviesapp.data.MovieContract;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.model.Trailer;
 
@@ -49,5 +52,62 @@ public class MovieAppConverterUtil {
 
         return items;
 
+    }
+
+    public static ContentValues buildContentValues(Movie movie) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginalTitle());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, movie.getVoteCount());
+        return contentValues;
+    }
+
+    public static Movie buildFromCursor(Cursor cursor) {
+
+        if(cursor != null
+                && !cursor.isClosed()
+                && !cursor.isAfterLast()
+                && !cursor.isBeforeFirst()){
+
+            Movie movie = new Movie();
+
+            movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+            movie.setBackdropPath(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH)));
+            movie.setOriginalLanguage(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE)));
+            movie.setOriginalTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE)));
+            movie.setOverview(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)));
+            movie.setPopularity(cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY)));
+            movie.setPosterPath(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH)));
+            movie.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE)));
+            movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
+            movie.setVoteAverage(cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE)));
+            movie.setVoteCount(cursor.getLong(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_COUNT)));
+
+            return movie;
+        }
+
+        return null;
+
+    }
+
+    public static List<Movie> buildListFromCursor(Cursor cursor) {
+        List<Movie> movies = new ArrayList<>();
+        if(cursor != null
+                && !cursor.isClosed()){
+            while (cursor.moveToNext()) {
+                Movie movie = buildFromCursor(cursor);
+                movies.add(movie);
+            }
+        }
+
+        return  movies;
     }
 }

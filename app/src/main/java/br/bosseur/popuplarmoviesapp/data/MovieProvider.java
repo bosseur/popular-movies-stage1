@@ -43,17 +43,35 @@ public class MovieProvider extends ContentProvider {
 
         Cursor cursor;
 
-        if (FAVORITES == sUriMatcher.match(uri)) {
-            cursor = mOpenHelper.getReadableDatabase().query(
-                    MovieContract.MovieEntry.TABLE_NAME,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null,
-                    null,
-                    sortOrder);
-        } else {
-            throw new UnsupportedOperationException("Unknown uri: " + uri);
+        int match = sUriMatcher.match(uri);
+        switch (match) {
+            case FAVORITES:
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+
+            case FAVORITE_WITH_ID:
+                final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+                String idMovie = uri.getPathSegments().get(1);
+                String idSelection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                String[] idSelectionArgs = new String[]{idMovie};
+                cursor = db.query(MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        idSelection,
+                        idSelectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         return cursor;
     }
@@ -71,7 +89,7 @@ public class MovieProvider extends ContentProvider {
         if (FAVORITES == sUriMatcher.match(uri)) {
             final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
             long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, contentValues);
-            if ( id > 0 ) {
+            if (id > 0) {
                 returnUri = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, id);
             } else {
                 throw new android.database.SQLException("Failed to insert row into " + uri);

@@ -4,9 +4,9 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +39,7 @@ import br.bosseur.popuplarmoviesapp.listeners.TaskListener;
 import br.bosseur.popuplarmoviesapp.model.Movie;
 import br.bosseur.popuplarmoviesapp.model.Review;
 import br.bosseur.popuplarmoviesapp.model.Trailer;
+import br.bosseur.popuplarmoviesapp.utilities.MovieAppConverterUtil;
 import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 import static br.bosseur.popuplarmoviesapp.MoviesActivity.MOVIE_TAG;
@@ -109,6 +110,13 @@ public class MovieDetailActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(MOVIE_TAG)) {
             selectedMovie = intent.getParcelableExtra(MOVIE_TAG);
+
+            Movie favoriteMovie = findFavorite();
+
+            selectedMovie.setFavorite(favoriteMovie != null);
+
+            setFavoriteIndicator();
+
             collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.background_light));
             collapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.background_light));
             collapsingToolbar.setTitle(selectedMovie.getTitle());
@@ -137,6 +145,22 @@ public class MovieDetailActivity extends AppCompatActivity implements
             query(reviewUrl, Review.class);
         }
 
+    }
+
+    private Movie findFavorite() {
+
+        Uri selectUri = getUriForMovie();
+        Cursor cursor = getContentResolver().query(selectUri, null, null, null, null);
+
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            Movie favoriteMovie = MovieAppConverterUtil.buildFromCursor(cursor);
+            cursor.close();
+
+            return favoriteMovie;
+        }
+
+        return null;
     }
 
     private void query(URL queryUrl, Class clazz) {
@@ -201,25 +225,21 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     public void changeFavorite(View view) {
         ContentResolver resolver = getContentResolver();
-        int favoriteIndicatorId;
         String message;
         if (this.selectedMovie.isFavorite()) {
-            Uri deleteUri = MovieContract.MovieEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(selectedMovie.getId()))
-                    .build();
+            Uri deleteUri = getUriForMovie();
             int numRemoved = resolver.delete(deleteUri, null, null);
-            favoriteIndicatorId = android.R.drawable.star_off;
+            Log.d(TAG, "Removed:" + numRemoved);
             message = getString(R.string.movie_favorite_removed_alert);
         } else {
-            Uri insertUri = MovieContract.MovieEntry.CONTENT_URI;
-            ContentValues contentValues = buildContentValues();
-            resolver.insert(insertUri, contentValues);
-            favoriteIndicatorId = android.R.drawable.star_on;
+            ContentValues contentValues = MovieAppConverterUtil.buildContentValues(selectedMovie);
+            resolver.insert(MovieContract.MovieEntry.CONTENT_URI , contentValues);
             message = getString(R.string.movie_favorite_added_alert);
         }
-
         this.selectedMovie.setFavorite(!this.selectedMovie.isFavorite());
-        mFavoriteImageButton.setImageResource(favoriteIndicatorId);
+        setFavoriteIndicator();
+
+        // Show a message to inform the user
         if( mToast != null ){
             mToast.cancel();
         }
@@ -228,20 +248,24 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     }
 
-    @NonNull
-    private ContentValues buildContentValues() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, selectedMovie.getBackdropPath());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, selectedMovie.getId());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, selectedMovie.getOriginalTitle());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, selectedMovie.getOriginalLanguage());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, selectedMovie.getOverview());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, selectedMovie.getPopularity());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, selectedMovie.getPosterPath());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, selectedMovie.getReleaseDate());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, selectedMovie.getTitle());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, selectedMovie.getVoteAverage());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, selectedMovie.getVoteCount());
-        return contentValues;
+    private void setFavoriteIndicator() {
+        int favoriteIndicatorId = getFavoriteImageId();
+        mFavoriteImageButton.setImageResource(favoriteIndicatorId);
     }
+
+    private int getFavoriteImageId() {
+        if (this.selectedMovie.isFavorite()) {
+            return android.R.drawable.star_on;
+        }
+
+        return android.R.drawable.star_off;
+    }
+
+    private Uri getUriForMovie() {
+        return MovieContract.MovieEntry.CONTENT_URI.buildUpon()
+                        .appendPath(String.valueOf(selectedMovie.getId()))
+                        .build();
+    }
+
+
 }
