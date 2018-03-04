@@ -130,7 +130,9 @@ public class MoviesActivity extends AppCompatActivity implements
 
         if (getString(R.string.popular_movie_url).equals(currentSortOrder)) {
             menu.findItem(R.id.popular).setChecked(true);
-        } else if (getString(R.string.top_rated_movie_url).equals(currentSortOrder)) {
+        } else if (getString(R.string.top_rated_movie_url).equals(currentSortOrder)
+                || currentSortOrder == null
+                || currentSortOrder.trim().isEmpty()) {
             menu.findItem(R.id.top_rated).setChecked(true);
         } else if (getString(R.string.pref_favorite_value).equals(currentSortOrder)) {
             menu.findItem(R.id.menu_favorites).setChecked(true);
