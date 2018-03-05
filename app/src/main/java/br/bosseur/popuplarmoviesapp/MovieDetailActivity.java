@@ -197,9 +197,8 @@ public class MovieDetailActivity extends AppCompatActivity implements
     outState.putParcelableArrayList(REVIEW_LIST_KEY,
         (ArrayList<? extends Parcelable>) mReviewAdapter.getReviewData());
 
-
   }
-
+     
   @Override
   protected void onRestoreInstanceState(Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
