@@ -23,63 +23,63 @@ import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 public class MovieListTask extends AsyncTask<String, Void, List<Movie>> {
 
-    private static final String TAG = MovieListTask.class.getSimpleName();
+  private static final String TAG = MovieListTask.class.getSimpleName();
 
-    private String errorMessage;
-    private Context context;
-    private TaskListener listener;
+  private String errorMessage;
+  private Context context;
+  private TaskListener listener;
 
-    public MovieListTask(Context context, TaskListener listener) {
-        this.context = context;
-        this.listener = listener;
+  public MovieListTask(Context context, TaskListener listener) {
+    this.context = context;
+    this.listener = listener;
+  }
+
+  private boolean isOnline() {
+    ConnectivityManager cm =
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    return cm.getActiveNetworkInfo() != null &&
+        cm.getActiveNetworkInfo().isConnectedOrConnecting();
+  }
+
+  @Override
+  protected void onPreExecute() {
+    super.onPreExecute();
+    errorMessage = "";
+    listener.onStartTask();
+
+  }
+
+  @Override
+  protected List<Movie> doInBackground(String... urls) {
+    if (urls == null || urls.length == 0 || !isOnline()) {
+      if (!isOnline()) {
+        errorMessage = context.getString(R.string.no_internet_message);
+      }
+      return null;
     }
 
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        return cm.getActiveNetworkInfo() != null &&
-                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    URL urlMovieList = NetworkUtils.buildMovieUrl(urls[0]);
+    try {
+      String response = NetworkUtils.getResponseFromHttpUrl(urlMovieList);
+      return MovieAppConverterUtil.buildResultList(response, Movie.class);
+    } catch (IOException e) {
+      Log.d(TAG, e.getMessage());
+      errorMessage = context.getString(R.string.standard_error_message, e.getMessage());
+    } catch (JSONException e) {
+      Log.d(TAG, e.getMessage());
+      errorMessage = context.getString(R.string.standard_error_message, e.getMessage());
     }
+    return null;
+  }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        errorMessage = "";
-        listener.onStartTask();
+  @Override
+  protected void onPostExecute(List<Movie> movieList) {
 
+    if (movieList != null) {
+      listener.onCompleteTask(movieList, Movie.class);
+    } else {
+      listener.onError(errorMessage);
     }
-
-    @Override
-    protected List<Movie> doInBackground(String... urls) {
-        if (urls == null || urls.length == 0 || !isOnline()) {
-            if(!isOnline()){
-                errorMessage = context.getString(R.string.no_internet_message);
-            }
-            return null;
-        }
-
-        URL urlMovieList = NetworkUtils.buildMovieUrl(urls[0]);
-        try {
-            String response = NetworkUtils.getResponseFromHttpUrl(urlMovieList);
-            return MovieAppConverterUtil.buildResultList(response, Movie.class);
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-            errorMessage = context.getString(R.string.standard_error_message, e.getMessage());
-        } catch (JSONException e) {
-            Log.d(TAG, e.getMessage());
-            errorMessage = context.getString(R.string.standard_error_message, e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(List<Movie> movieList) {
-
-        if (movieList != null) {
-            listener.onCompleteTask(movieList, Movie.class);
-        } else {
-            listener.onError(errorMessage);
-        }
-    }
+  }
 }

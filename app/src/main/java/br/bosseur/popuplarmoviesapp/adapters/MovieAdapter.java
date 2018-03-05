@@ -23,89 +23,90 @@ import br.bosseur.popuplarmoviesapp.utilities.NetworkUtils;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private static final String TAG = MovieAdapter.class.getSimpleName();
+  private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    private List<Movie> mMovieData;
+  private List<Movie> mMovieData;
 
-    private final AdapterOnClickHandler<Movie> mClickHandler;
+  private final AdapterOnClickHandler<Movie> mClickHandler;
 
-    public MovieAdapter(AdapterOnClickHandler<Movie> mClickHandler) {
-        this.mClickHandler = mClickHandler;
+  public MovieAdapter(AdapterOnClickHandler<Movie> mClickHandler) {
+    this.mClickHandler = mClickHandler;
+  }
+
+
+  @Override
+  public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    Context context = parent.getContext();
+    LayoutInflater inflater = LayoutInflater.from(context);
+    boolean shouldAttachToParentImmediately = false;
+
+    View view = inflater.inflate(R.layout.movie_item, parent, shouldAttachToParentImmediately);
+    return new MovieAdapterViewHolder(view);
+  }
+
+  /**
+   * Bind the view to the Movie
+   *
+   * @param holder   The ViewHolder that sould be updated with the content of the new item
+   * @param position The position if the item to be shown
+   */
+  @Override
+  public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+    Movie selectedMovie = mMovieData.get(position);
+    Context context = holder.itemView.getContext();
+    // TODO change the way to get the width of the image
+    String urlImage = NetworkUtils.buildImageUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
+    Log.d(TAG, selectedMovie.toString());
+    Picasso.with(context).load(urlImage).into(holder.mMoviePosterImageView);
+  }
+
+  /**
+   * This method simply returns the number of items to display. It is used behind the scenes
+   * to help layout our Views and for animations.
+   *
+   * @return The number of items movies in the list
+   */
+  @Override
+  public int getItemCount() {
+    if (mMovieData == null) {
+      return 0;
     }
+    return mMovieData.size();
+  }
 
+  /**
+   * Set the movie list for the adapter and notify the adapter that the dataset has changed
+   *
+   * @param mMovieData The list of movies that should be shown.
+   */
+  public void setMovieData(List<Movie> mMovieData) {
+    this.mMovieData = mMovieData;
+    notifyDataSetChanged();
+  }
 
-    @Override
-    public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
+  /**
+   * The Viewholder for the @{@link MovieAdapter}  for caching the children views
+   */
+  public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        View view = inflater.inflate(R.layout.movie_item, parent, shouldAttachToParentImmediately);
-        return new MovieAdapterViewHolder(view);
+    protected final ImageView mMoviePosterImageView;
+
+    public MovieAdapterViewHolder(View itemView) {
+      super(itemView);
+      mMoviePosterImageView = (ImageView) itemView.findViewById(R.id.iv_movie_list_picture);
+      itemView.setOnClickListener(this);
     }
 
     /**
-     * Bind the view to the Movie
+     * Implemented method from the @{@link View.OnClickListener}
      *
-     * @param holder   The ViewHolder that sould be updated with the content of the new item
-     * @param position The position if the item to be shown
+     * @param view
      */
     @Override
-    public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        Movie selectedMovie = mMovieData.get(position);
-        Context context = holder.itemView.getContext();
-        // TODO change the way to get the width of the image
-        String urlImage = NetworkUtils.buildImageUrl(selectedMovie.getPosterPath().substring(1), "w185").toString();
-        Log.d(TAG, selectedMovie.toString());
-        Picasso.with(context).load(urlImage).into(holder.mMoviePosterImageView);
+    public void onClick(View view) {
+      int position = getAdapterPosition();
+      Movie selectedMovie = mMovieData.get(position);
+      mClickHandler.onClick(selectedMovie);
     }
-
-    /**
-     * This method simply returns the number of items to display. It is used behind the scenes
-     * to help layout our Views and for animations.
-     *
-     * @return The number of items movies in the list
-     */
-    @Override
-    public int getItemCount() {
-        if (mMovieData == null) {
-            return 0;
-        }
-        return mMovieData.size();
-    }
-
-    /**
-     * Set the movie list for the adapter and notify the adapter that the dataset has changed
-     *
-     * @param mMovieData The list of movies that should be shown.
-     */
-    public void setMovieData(List<Movie> mMovieData) {
-        this.mMovieData = mMovieData;
-        notifyDataSetChanged();
-    }
-
-    /**
-     * The Viewholder for the @{@link MovieAdapter}  for caching the children views
-     */
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        protected final ImageView mMoviePosterImageView;
-
-        public MovieAdapterViewHolder(View itemView) {
-            super(itemView);
-            mMoviePosterImageView = (ImageView) itemView.findViewById(R.id.iv_movie_list_picture);
-            itemView.setOnClickListener(this);
-        }
-
-        /**
-         * Implemented method from the @{@link View.OnClickListener}
-         * @param view
-         */
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            Movie selectedMovie = mMovieData.get(position);
-            mClickHandler.onClick(selectedMovie);
-        }
-    }
+  }
 }
